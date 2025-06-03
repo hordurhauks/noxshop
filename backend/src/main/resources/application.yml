@@ -1,0 +1,14 @@
+spring:
+    datasource:
+        url: jdbc:sqlite:shop.db
+        driver-class-name: org.sqlite.JDBC
+    jpa:
+        database-platform: org.hibernate.community.dialect.SQLiteDialect
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: https://securetoken.google.com/noxshop-90b79
