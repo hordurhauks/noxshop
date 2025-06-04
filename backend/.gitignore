@@ -3,10 +3,6 @@
 build/
 gradle/wrapper/gradle-wrapper.jar
 
-# Gradle scripts
-gradlew
-gradlew.bat
-
 # Firebase secrets
 firebase/serviceAccountKey.json
 
