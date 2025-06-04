@@ -8,7 +8,7 @@ gradlew
 gradlew.bat
 
 # Firebase secrets
-backend/firebase/serviceAccountKey.json
+firebase/serviceAccountKey.json
 
 # IDE files
 *.idea/
