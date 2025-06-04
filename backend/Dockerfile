@@ -4,7 +4,7 @@ FROM gradle:8.7-jdk21 AS build
 WORKDIR /app
 
 # Copy build files first for better caching
-COPY build.gradle.kts settings.gradle.kts gradle.properties ./
+COPY build.gradle.kts settings.gradle.kts ./
 COPY gradle ./gradle
 COPY src ./src
 
