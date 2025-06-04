@@ -1,13 +1,24 @@
-FROM eclipse-temurin:17-jdk-alpine
+# Use Gradle with Java 21 to build the app
+FROM gradle:8.7-jdk21 AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy build output (assuming you’re using Gradle)
-COPY build/libs/*.jar app.jar
+# Copy build files first for better caching
+COPY build.gradle.kts settings.gradle.kts gradle.properties ./
+COPY gradle ./gradle
+COPY src ./src
 
-# Expose port 8080
+# Build the jar
+RUN gradle bootJar --no-daemon
+
+# Use lightweight Java 21 runtime image to run the app
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Copy the built jar from the previous stage
+COPY --from=build /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
 
-# Run the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
