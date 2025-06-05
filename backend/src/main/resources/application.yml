@@ -1,12 +1,12 @@
 spring:
     datasource:
-        url: jdbc:sqlite:shop.db
-        driver-class-name: org.sqlite.JDBC
-    jpa:
-        database-platform: org.hibernate.community.dialect.SQLiteDialect
-        hibernate:
-            ddl-auto: update
-        show-sql: true
+        url: ${SPRING_DATASOURCE_URL}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
+        jpa:
+            hibernate:
+                ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+            show-sql: ${SPRING_JPA_SHOW_SQL}
     security:
         oauth2:
             resourceserver:
