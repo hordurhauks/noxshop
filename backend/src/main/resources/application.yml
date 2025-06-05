@@ -15,3 +15,5 @@ spring:
     firebase:
         credentials:
             path: /etc/secrets/firebase-service-account.json
+    server:
+        port: 8085
