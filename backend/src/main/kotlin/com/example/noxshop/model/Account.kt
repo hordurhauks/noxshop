@@ -4,7 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
 @Entity
-data class User(
+data class Account(
     @Id val uid: String,
     val email: String
 )

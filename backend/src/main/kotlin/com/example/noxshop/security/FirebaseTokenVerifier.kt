@@ -14,12 +14,8 @@ class FirebaseTokenVerifier {
 
     @PostConstruct
     fun init() {
-        val path = when {
-            File("/etc/secrets/firebase-service-account.json").exists() ->
-                "/etc/secrets/firebase-service-account.json"
-            else ->
-                "firebase/serviceAccountKey.json" // for local dev
-        }
+        val path = "/app/firebase/serviceAccountKey.json" // for local dev
+
         val serviceAccount = FileInputStream(path)
         val options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))

@@ -1,6 +1,6 @@
 package com.example.noxshop.repositories
 
-import com.example.noxshop.model.User
+import com.example.noxshop.model.Account
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepository: JpaRepository<User, String>
+interface UserRepository: JpaRepository<Account, String>
