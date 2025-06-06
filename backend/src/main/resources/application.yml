@@ -1,3 +1,6 @@
+server:
+    port: 8085
+    
 spring:
     datasource:
         url: ${SPRING_DATASOURCE_URL}
@@ -15,5 +18,3 @@ spring:
     firebase:
         credentials:
             path: /etc/secrets/firebase-service-account.json
-    server:
-        port: 8085
