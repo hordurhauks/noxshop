@@ -12,6 +12,3 @@ spring:
             resourceserver:
                 jwt:
                     issuer-uri: https://securetoken.google.com/noxshop-90b79
-    firebase:
-        credentials:
-            path: /etc/secrets/firebase-service-account.json
