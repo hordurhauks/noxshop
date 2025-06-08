@@ -14,7 +14,13 @@ class FirebaseTokenVerifier {
 
     @PostConstruct
     fun init() {
-        val path = "/app/firebase/serviceAccountKey.json" // for local dev
+        val isDocker = System.getenv("IS_DOCKER") == "true"
+
+        val path = if (isDocker) {
+            "/app/firebase/serviceAccountKey.json"
+        } else {
+            "firebase/serviceAccountKey.json"
+        }
 
         val serviceAccount = FileInputStream(path)
         val options = FirebaseOptions.builder()

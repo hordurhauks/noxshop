@@ -24,12 +24,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
+      IS_DOCKER: "true"
     ports:
       - "8085:8080"
     depends_on:
       - db
     volumes:
       - ./backend/firebase/serviceAccountKey.json:/app/firebase/serviceAccountKey.json:ro
+      - ./backend/uploads/products:/app/uploads/products
 
 volumes:
   postgres_data:

@@ -18,3 +18,5 @@ firebase/serviceAccountKey.json
 # Environment variables
 .env
 serviceAccountKey.json
+backend/src/main/resources/application-dev.yml
+backend/uploads/products/*
