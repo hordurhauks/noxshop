@@ -12,7 +12,7 @@
       <section class="product-grid">
         <div v-for="product in products" :key="product.id" class="card" @click="buy(product.id)">
           <img
-            src="https://picsum.photos/200/300"
+            :src="product.imageUrl ? `/uploads/products/${product.imageUrl}` : '/placeholder-store.png'"
             alt="Product image"
             class="product-image"
             width="120"

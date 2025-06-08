@@ -15,20 +15,15 @@
           <form @submit.prevent="confirmAddProduct">
             <input v-model="newProduct.name" placeholder="Product name" required />
 
-            <input v-model.number="newProduct.price" placeholder="Price" type="number" min="0" step="0.01" required />
+            <input v-model.number="newProduct.price" placeholder="Price" type="number" min="0" step="1" required />
 
             <label for="imageInput">Product Image:</label>
-            <input
-              id="imageInput"
-              type="file"
-              @change="onFileChange"
-              accept="image/*"
-              required
-            />
+            <input id="imageInput" type="file" @change="onFileChange" accept="image/*" required />
             <p v-if="uploadMessage" class="upload-message">{{ uploadMessage }}</p>
 
             <div class="modal-buttons">
-              <button type="submit" :disabled="!selectedFile || !newProduct.name || newProduct.price <= 0">Confirm</button>
+              <button type="submit"
+                :disabled="!selectedFile || !newProduct.name || newProduct.price <= 0">Confirm</button>
               <button type="button" @click="cancelAdd">Cancel</button>
             </div>
           </form>
@@ -72,6 +67,7 @@ export default {
         imageUrl: null,
       },
       selectedFile: null,
+      newProductImage: null,
       uploadMessage: '',
     }
   },
@@ -133,7 +129,9 @@ export default {
           },
         })
 
+        console.log(uploadRes)
         const imageUrl = uploadRes.data.imageUrl // assuming backend returns { imageUrl: "..." }
+        console.log(imageUrl)
 
         // Now create product with image URL included
         const productPayload = {
@@ -155,6 +153,43 @@ export default {
       } catch (err) {
         this.uploadMessage = 'Error: ' + (err.response?.data?.message || err.message)
       }
+    },
+
+    async handleFileUpload(event) {
+      const file = event.target.files[0]
+      if (!file) return
+
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const headers = await this.getAuthHeader()
+      const res = await axios.post('/api/admin/upload-image', formData, {
+        headers,
+        headers: {
+          ...headers,
+          "Content-Type": "multipart/form-data",
+        }
+      })
+
+      this.newProduct.image = res.data // unique filename from backend
+    },
+
+    async addProductWithImage() {
+      if (!this.newProduct.image) {
+        alert("Please upload an image first.")
+        return
+      }
+
+      const headers = await this.getAuthHeader()
+      await axios.post('/api/admin/products', this.newProduct, { headers })
+
+      // Reset state
+      this.newProduct = { name: '', price: 0, image: '' }
+      this.newProductImage = null
+      this.showAddDialog = false
+
+      this.fetchProducts()
+      this.fetchUserSpend()
     },
   },
   mounted() {

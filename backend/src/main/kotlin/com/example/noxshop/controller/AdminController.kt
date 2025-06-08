@@ -5,7 +5,6 @@ import com.example.noxshop.model.Product
 import com.example.noxshop.repositories.ProductRepository
 import com.example.noxshop.repositories.PurchaseRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
@@ -78,30 +77,36 @@ class AdminController(
     }
 
     @PostMapping("/upload-image")
-    fun uploadImage(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+    fun uploadImage(@RequestParam("file") file: MultipartFile): ResponseEntity<Map<String, String>> {
         if (file.isEmpty) {
-            return ResponseEntity.badRequest().body("File is empty")
+            return ResponseEntity.badRequest().body(mapOf("error" to "File is empty."))
         }
 
-        val filename = StringUtils.cleanPath(file.originalFilename ?: "unknown")
-
-        try {
-            val uploadPath = Paths.get(appProperties.uploadDir)
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath)
-            }
-
-            val filePath = uploadPath.resolve(filename)
-            file.inputStream.use { input ->
-                Files.copy(input, filePath)
-            }
-
-            // Return the relative path or URL of the uploaded image
-            val imageUrl = "/uploads/products/$filename"
-            return ResponseEntity.ok(imageUrl)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return ResponseEntity.internalServerError().body("Failed to upload")
+        // Check file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            return ResponseEntity.badRequest().body(mapOf("error" to "File too large (max 10MB)"))
         }
+
+        val allowedTypes = setOf("image/png", "image/jpeg")
+        val contentType = file.contentType ?: ""
+        if (contentType !in allowedTypes) {
+            return ResponseEntity.badRequest().body(mapOf("error" to "Only PNG and JPG files are allowed."))
+        }
+
+        val uploadPath = Paths.get(appProperties.uploadDir)
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath)
+        }
+
+        val extension = when (contentType) {
+            "image/png" -> ".png"
+            "image/jpeg" -> ".jpg"
+            else -> return ResponseEntity.badRequest().body(mapOf("error" to "Unsupported file type."))
+        }
+        val filename = "${System.currentTimeMillis()}$extension"
+        val destination = uploadPath.resolve(filename)
+        file.transferTo(destination)
+        val response = mapOf("imageUrl" to filename)
+        return ResponseEntity.ok(response)
     }
 }

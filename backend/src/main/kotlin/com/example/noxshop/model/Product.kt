@@ -11,5 +11,6 @@ data class Product(
     val id: Long = 0,
     val name: String,
     val price: Double,
+    var imageUrl: String? = null,
     var isRemoved: Boolean = false
 )

@@ -30,6 +30,7 @@ class SecurityConfig {
                 authorize("/favicon.ico", permitAll)
                 authorize("/api/products", permitAll)
                 authorize("/api/**", authenticated)
+                authorize("/uploads/**", permitAll)
             }
 
             oauth2ResourceServer {
