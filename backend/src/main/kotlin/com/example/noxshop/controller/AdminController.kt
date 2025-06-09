@@ -1,7 +1,11 @@
 package com.example.noxshop.controller
 
 import com.example.noxshop.config.AppProperties
+import com.example.noxshop.dto.PurchaseDTO
+import com.example.noxshop.model.Account
 import com.example.noxshop.model.Product
+import com.example.noxshop.model.Purchase
+import com.example.noxshop.repositories.AccountRepository
 import com.example.noxshop.repositories.ProductRepository
 import com.example.noxshop.repositories.PurchaseRepository
 import org.springframework.http.ResponseEntity
@@ -10,12 +14,40 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Paths
 
+
 @RestController
 @RequestMapping("/api/admin")
 class AdminController(
     private val productRepo: ProductRepository,
     private val purchaseRepo: PurchaseRepository,
-    val appProperties: AppProperties) {
+    private val accountRepo: AccountRepository,
+    val appProperties: AppProperties
+) {
+
+    @GetMapping("/users")
+    fun getAccounts(): List<Account> = accountRepo.findAll()
+
+    @GetMapping("/users/{userId}/purchases")
+    fun getPurchasesForUser(@PathVariable userId: String): List<PurchaseDTO> {
+        val purchases: List<Purchase> = purchaseRepo.findByUserId(userId)
+        return purchases.mapNotNull { purchase ->
+            val productOpt = productRepo.findById(purchase.productId)
+            if (productOpt.isPresent) {
+                val product = productOpt.get()
+                PurchaseDTO(
+                    id = purchase.id,
+                    userId = purchase.userId,
+                    productId = product.id,
+                    productName = product.name,
+                    price = purchase.price,
+                    timestamp = purchase.timestamp
+                )
+            } else {
+                // Product no longer exists, skip this purchase
+                null
+            }
+        }
+    }
 
     /**
      * Admin: Add a new product.
@@ -63,7 +95,8 @@ class AdminController(
     fun userMonthlySpend(): Map<String, Double> {
         val currentMonth = java.time.YearMonth.now()
         val startOfMonth = currentMonth.atDay(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
-        val endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59).atZone(java.time.ZoneId.systemDefault()).toInstant()
+        val endOfMonth =
+            currentMonth.atEndOfMonth().atTime(23, 59, 59).atZone(java.time.ZoneId.systemDefault()).toInstant()
 
         val allPurchases = purchaseRepo.findAll()
             .filter {

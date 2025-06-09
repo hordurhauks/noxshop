@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class NoxShopApplication
 
 fun main(args: Array<String>) {
-	runApplication<NoxShopApplication>(*args)
+    runApplication<NoxShopApplication>(*args)
 }

@@ -11,13 +11,8 @@
 
       <section class="product-grid">
         <div v-for="product in products" :key="product.id" class="card" @click="buy(product.id)">
-          <img
-            :src="product.imageUrl ? `/uploads/products/${product.imageUrl}` : '/placeholder-store.png'"
-            alt="Product image"
-            class="product-image"
-            width="120"
-            height="120"
-          />
+          <img :src="product.imageUrl ? `/uploads/products/${product.imageUrl}` : '/placeholder-store.png'"
+            alt="Product image" class="product-image" width="120" height="120" />
           <h3>{{ product.name }}</h3>
           <p>{{ product.price.toFixed(0) }} ISK</p>
         </div>
@@ -27,7 +22,8 @@
         <h3>Your Purchases</h3>
         <ul>
           <li v-for="purchase in purchases" :key="purchase.id">
-            {{ formatDate(purchase.timestamp) }} – {{ purchase.productName }} – {{ purchase.price.toLocaleString() }} ISK
+            {{ formatDate(purchase.timestamp) }} – {{ purchase.productName }} – {{ purchase.price.toLocaleString() }}
+            ISK
           </li>
         </ul>
       </section>
@@ -44,13 +40,26 @@ const auth = getAuth()
 const user = ref(null)
 const products = ref([])
 const purchases = ref([])
+const loading = ref(true)
 
-onAuthStateChanged(auth, (u) => {
+onAuthStateChanged(auth, async (u) => {
   user.value = u
+  loading.value = true
   if (u) {
-    loadProducts()
-    loadPurchases()
+    try {
+      const token = await u.getIdToken()
+
+      await axios.post('/api/auth/login', null, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      await Promise.all([loadProducts(), loadPurchases()])
+    } catch (error) {
+      console.error('Error during backend sync or data load:', error)
+    }
   }
+
+  loading.value = false
 })
 
 function signIn() {
@@ -120,7 +129,7 @@ function formatDate(iso) {
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: 0.2s ease-in-out;
 }
 

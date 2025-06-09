@@ -38,13 +38,12 @@ class ShopController(
     @PostMapping("/buy")
     fun buy(
         @RequestParam productId: Long,
-        @AuthenticationPrincipal jwt: Jwt
+        @RequestAttribute("uid") uid: String
     ): ResponseEntity<String> {
-        val userId = jwt.subject
         val product = productRepo.findById(productId).orElseThrow { RuntimeException("Product not found") }
 
         val purchase = Purchase(
-            userId = userId,
+            userId = uid,
             productId = productId,
             price = product.price
         )
@@ -58,10 +57,9 @@ class ShopController(
      */
     @GetMapping("/purchases")
     fun getPurchases(
-        @AuthenticationPrincipal jwt: Jwt
+        @RequestAttribute("uid") uid: String
     ): List<PurchaseDTO> {
-        val userId = jwt.subject
-        val purchases = purchaseRepo.findByUserId(userId)
+        val purchases = purchaseRepo.findByUserId(uid)
         return purchases.mapNotNull { purchase ->
             val productOpt = productRepo.findById(purchase.productId)
             if (productOpt.isPresent) {

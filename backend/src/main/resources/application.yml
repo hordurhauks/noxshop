@@ -1,20 +1,20 @@
 spring:
-    servlet:
-        multipart:
-            max-file-size: 10MB
-            max-request-size: 10MB
-    datasource:
-        url: ${SPRING_DATASOURCE_URL}
-        username: ${SPRING_DATASOURCE_USERNAME}
-        password: ${SPRING_DATASOURCE_PASSWORD}
-    jpa:
-        hibernate:
-            ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
-        show-sql: ${SPRING_JPA_SHOW_SQL}
-    security:
-        oauth2:
-            resourceserver:
-                jwt:
-                    issuer-uri: https://securetoken.google.com/noxshop-90b79
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+    show-sql: ${SPRING_JPA_SHOW_SQL}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/noxshop-90b79
 app:
-    upload-dir: ./uploads/products
+  upload-dir: ./uploads/products

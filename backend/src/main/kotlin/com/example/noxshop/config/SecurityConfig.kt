@@ -1,5 +1,7 @@
 package com.example.noxshop.config
 
+import com.example.noxshop.security.FirebaseAuthFilter
+import com.example.noxshop.security.LoggingFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -10,16 +12,16 @@ import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.core.OAuth2TokenValidator
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(private val loggingFilter: LoggingFilter, private val firebaseAuthFilter: FirebaseAuthFilter) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             csrf { disable() }
-
             cors { }
 
             authorizeHttpRequests {
@@ -28,19 +30,18 @@ class SecurityConfig {
                 authorize("/index.html", permitAll)
                 authorize("/main.js", permitAll)
                 authorize("/favicon.ico", permitAll)
+                authorize("/uploads/**", permitAll)
                 authorize("/api/products", permitAll)
                 authorize("/api/**", authenticated)
-                authorize("/uploads/**", permitAll)
-            }
-
-            oauth2ResourceServer {
-                jwt { }
             }
 
             httpBasic { disable() }
             formLogin { disable() }
         }
 
+        // Register FirebaseAuthFilter BEFORE Spring's default UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(loggingFilter, FirebaseAuthFilter::class.java)
         return http.build()
     }
 }
