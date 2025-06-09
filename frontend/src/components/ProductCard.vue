@@ -1,5 +1,5 @@
 <template>
-    <div class="product-card" @click="$emit('click')">
+    <div class="product-card" @click="$emit('select-product')">
         <img :src="product.imageUrl ? `/uploads/products/${product.imageUrl}` : '/placeholder-store.png'"
             alt="Product image" class="product-card-image" />
         <div class="product-card-info">
