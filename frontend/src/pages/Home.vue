@@ -1,6 +1,11 @@
 <template>
   <main class="home">
-    <div v-if="!user">
+
+    <div v-if="loading" class="loading-indicator">
+      <div class="spinner"></div>
+    </div>
+
+    <div v-else-if="!user">
       <h2>Welcome to the Nox Shop</h2>
       <button @click="signIn">Sign in with Google</button>
     </div>
@@ -10,13 +15,10 @@
       <button @click="signOut">Sign Out</button>
 
       <section class="product-grid">
-        <div v-for="product in products" :key="product.id" class="card" @click="buy(product.id)">
-          <img :src="product.imageUrl ? `/uploads/products/${product.imageUrl}` : '/placeholder-store.png'"
-            alt="Product image" class="product-image" width="120" height="120" />
-          <h3>{{ product.name }}</h3>
-          <p>{{ product.price.toFixed(0) }} ISK</p>
-        </div>
+        <ProductCard v-for="product in products" :key="product.id" :product="product" @click="buy(product.id)" />
       </section>
+
+
 
       <section class="purchase-history" v-if="purchases.length">
         <h3>Your Purchases</h3>
@@ -35,6 +37,7 @@
 import axios from 'axios'
 import { signOut as doSignOut, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from 'firebase/auth'
 import { ref } from 'vue'
+import ProductCard from '../components/ProductCard.vue'
 
 const auth = getAuth()
 const user = ref(null)
@@ -43,8 +46,8 @@ const purchases = ref([])
 const loading = ref(true)
 
 onAuthStateChanged(auth, async (u) => {
-  user.value = u
   loading.value = true
+  user.value = u
   if (u) {
     try {
       const token = await u.getIdToken()
@@ -154,5 +157,28 @@ function formatDate(iso) {
 .purchase-history li {
   padding: 0.5rem 0;
   border-bottom: 1px solid #ddd;
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
