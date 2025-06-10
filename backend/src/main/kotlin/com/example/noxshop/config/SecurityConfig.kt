@@ -26,13 +26,9 @@ class SecurityConfig(private val loggingFilter: LoggingFilter, private val fireb
 
             authorizeHttpRequests {
                 authorize(HttpMethod.OPTIONS, "/**", permitAll) // preflight
-                authorize("/", permitAll)
-                authorize("/index.html", permitAll)
-                authorize("/main.js", permitAll)
-                authorize("/favicon.ico", permitAll)
-                authorize("/uploads/**", permitAll)
                 authorize("/api/products", permitAll)
                 authorize("/api/**", authenticated)
+                authorize(anyRequest, permitAll)
             }
 
             httpBasic { disable() }

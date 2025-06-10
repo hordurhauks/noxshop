@@ -33,15 +33,5 @@ services:
       - ./backend/firebase/serviceAccountKey.json:/app/firebase/serviceAccountKey.json:ro
       - ./backend/uploads/products:/app/uploads/products
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: vue-frontend
-    ports:
-      - "8080:80"  # Expose port 80 of Nginx as 8080 on the host
-    depends_on:
-      - backend
-
 volumes:
   postgres_data:
