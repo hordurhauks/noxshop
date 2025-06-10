@@ -22,7 +22,11 @@ class SecurityConfig(private val loggingFilter: LoggingFilter, private val fireb
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             csrf { disable() }
-            cors { }
+
+            val isDocker = System.getenv("IS_DOCKER") == "true"
+            if (!isDocker) {
+                cors { }
+            }
 
             authorizeHttpRequests {
                 authorize(HttpMethod.OPTIONS, "/**", permitAll) // preflight
